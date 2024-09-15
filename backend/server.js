@@ -1,24 +1,18 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const connectDB = require('./config/db');
 dotenv.config();
-const products = require('./data/products');
-
+connectDB();
 const app = express();
 const PORT = process.env.PORT || 8000;
+const {notFound, errorHandler} = require('./middleware/errorHandler');
 
-app.get('/api/products', (req,res) => {
-    res.json(products);
-})
+const productRoute = require('./routes/productRoute');
 
-app.get('/api/products/:id', (req,res) => {
-    const product = products.find(product => product._id === req.params.id)
+app.use('/api/products', productRoute);
 
-    if(!product) {
-        res.status(404).json({message: 'Product not found'});
-        return;
-    }
-    res.status(200).json(product);
-})
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

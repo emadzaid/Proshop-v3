@@ -1,6 +1,5 @@
 const products = [
     {
-      _id: '1',
       name: 'Airpods Wireless Bluetooth Headphones',
       image: '/images/airpods.jpg',
       description:
@@ -14,7 +13,6 @@ const products = [
     },
   
     {
-      _id: '2',
       name: 'Amazon Echo Dot 3rd Generation',
       image: '/images/alexa.jpg',
       description:
@@ -28,7 +26,6 @@ const products = [
     },
   
     {
-      _id: '3',
       name: 'Canon EOS 80D DSLR Camera',
       image: '/images/camera.jpg',
       description:
@@ -42,7 +39,6 @@ const products = [
     },
   
     {
-      _id: '4',
       name: 'Logitech Wireless Mouse',
       image: '/images/mouse.jpg',
       description:
@@ -56,7 +52,6 @@ const products = [
     },
   
     {
-      _id: '5',
       name: 'iPhone 12 Pro Max',
       image: '/images/phone.jpg',
       description:
@@ -70,7 +65,6 @@ const products = [
     },
   
     {
-      _id: '6',
       name: 'Sony PlayStation 5 Disc Edition',
       image: '/images/playstation.jpg',
       description:
