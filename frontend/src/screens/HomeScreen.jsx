@@ -26,10 +26,11 @@ const HomeScreen = () => {
 
   
   const {data: products, isLoading, error} = useGetProductsQuery();
+  console.log(products);
 
   return (
     <>
-      {isLoading ? (<Loader />) : error ? (<Message varient='danger'>error?.data?.message || error.error</Message>) : (<>
+      {isLoading ? (<Loader />) : error ? (<Message varient='danger'>{error?.data?.message || error.error}</Message>) : (<>
 
               <h1>Latest Products</h1>
               <Row>
