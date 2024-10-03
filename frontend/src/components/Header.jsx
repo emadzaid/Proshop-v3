@@ -2,12 +2,34 @@ import {Navbar, Nav, Container} from 'react-bootstrap'
 import {FaUser, FaShoppingCart} from 'react-icons/fa'
 import {LinkContainer} from 'react-router-bootstrap'
 import logo from '../assets/logo.png'
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Badge from 'react-bootstrap/Badge';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import { useLogoutMutation } from '../slices/userApiSlice'
+import { logout } from '../slices/authSlice';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
 
     const itemsInCart = useSelector((state) => state.cart.cartItems);
+    const {userInfo} = useSelector((state) => state.auth);
+    const [logoutApiCall] = useLogoutMutation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const logoutHandler = async () => {
+        try {
+            await logoutApiCall().unwrap();
+            dispatch(logout());
+            navigate('/login');
+
+
+        } catch(error) {
+            toast(error || error?.message || error?.data?.message);
+        }        
+    }
+
     return ( 
             <header>
                 <Navbar bg='dark' variant='dark' expand='md' collapseOnSelect>
@@ -24,8 +46,8 @@ const Header = () => {
                             <Nav className='ms-auto'>
 
                                 <LinkContainer to='/cart'> 
-                                    <Nav.Link> <FaShoppingCart />
-
+                                    <Nav.Link> 
+                                        <FaShoppingCart />
                                     Cart
 
                                     {itemsInCart.length > 0 &&
@@ -39,9 +61,24 @@ const Header = () => {
                                     </Nav.Link>
                                 </LinkContainer>
 
+                               {userInfo ? (
+
+                                <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
+                                    <LinkContainer to={'/profile'}>
+                                        <NavDropdown.Item> Profile </NavDropdown.Item>
+                                    </LinkContainer>                             
+                                    <NavDropdown.Item onClick={(e) => logoutHandler(e)}> Logout </NavDropdown.Item>
+                                </NavDropdown>
+                                    
+                               ) : (
+                                                
                                 <LinkContainer to='/login'> 
                                     <Nav.Link> <FaUser /> Sign in </Nav.Link>
                                 </LinkContainer>
+
+                               )}
+
+
 
                             </Nav>
                         </Navbar.Collapse>
