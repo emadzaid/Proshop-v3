@@ -20,7 +20,8 @@ const CartScreen = () => {
     }
 
     const checkoutHandler = () => {
-        navigate('/login?redirect=/shipping')
+        console.log("checkout handler");
+        navigate('/login?redirect=/shipping');
     }
     
   return (
@@ -77,7 +78,7 @@ const CartScreen = () => {
                         </ListGroupItem>
 
                         <ListGroupItem>
-                            <Button type="btn" onClick={() => checkoutHandler} disabled={cartItems.length === 0} className="btn-block" >
+                            <Button type="btn" onClick={() => checkoutHandler()} disabled={cartItems.length === 0} className="btn-block" >
                                 Proceed to checkout
                             </Button>
                         </ListGroupItem>

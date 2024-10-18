@@ -16,10 +16,11 @@ const {notFound, errorHandler} = require('./middleware/errorHandler');
 
 const productRoute = require('./routes/productRoute');
 const userRoute = require('./routes/userRoute');
-
+const orderRoute = require('./routes/orderRoute');
 
 app.use('/api/products', productRoute);
 app.use('/api/users', userRoute);
+app.use('/api/orders', orderRoute);
 
 app.use(notFound);
 app.use(errorHandler);

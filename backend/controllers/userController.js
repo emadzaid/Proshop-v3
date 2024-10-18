@@ -33,14 +33,13 @@ const authUser = asyncHandler(async (req,res) => {
 const registerUser = asyncHandler(async (req,res) => {
     const {name, email, password} = req.body;
     const userExist = await userModel.findOne({email});
-
+   
     if(userExist) {
         res.status(409);
         throw new Error('User already exists');
     } 
         
     const user = await userModel.create({name, email, password});
-    console.log(user)
 
     if(user) {
         generateTokens(res, user._id);
@@ -106,7 +105,6 @@ const updateUserProfile = asyncHandler(async (req,res) => {
             user.password = req.body.password;
         }
         const updatedUser = await user.save();
-        console.log(updatedUser);
         res.status(200).json({
             _id: updatedUser._id,
             name: updatedUser.name,

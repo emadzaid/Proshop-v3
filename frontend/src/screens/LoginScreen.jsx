@@ -24,6 +24,7 @@ const LoginScreen = () => {
     const {search} = useLocation();
     const queryParams = new URLSearchParams(search);
     const redirect = queryParams.get('redirect') || '/';
+    console.log(redirect);
 
     useEffect(() => {
         if (userInfo) {

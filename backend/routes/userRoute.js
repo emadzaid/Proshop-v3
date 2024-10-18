@@ -19,10 +19,10 @@ const {
     // admin routes
 
     router.post('/logout', logoutUser);
-    router.post('/login',  authUser)
+    router.post('/login',  authUser);
     
-    router.get('/profile', protect, getUserProfile)
-    router.put('/profile', protect, updateUserProfile)
+    router.get('/profile', protect, getUserProfile);
+    router.put('/profile', protect, updateUserProfile);
 
     router.get('/', protect, admin ,getUsers); // admin only 
     router.post('/', registerUser);

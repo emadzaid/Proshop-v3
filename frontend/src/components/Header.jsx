@@ -50,7 +50,7 @@ const Header = () => {
                                         <FaShoppingCart />
                                     Cart
 
-                                    {itemsInCart.length > 0 &&
+                                    {(userInfo && itemsInCart.length) > 0 &&
 
                                     <Badge pill bg="success">
                                         {itemsInCart.reduce((acc, item) => acc + item.qty, 0)}
