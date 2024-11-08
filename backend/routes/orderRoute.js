@@ -19,7 +19,7 @@ router.get('/', protect, admin, getOrders); //admin
 router.get('/myorders', protect, getMyOrderItems);
 router.put('/:id/pay', protect, updateOrderToPaid); 
 router.put('/:id/deliver', protect, admin, updateOrderToDeliver); //admin
-router.get('/:id', protect, admin, getOrderById); //admin
+router.get('/:id', protect, getOrderById);
 
 module.exports = router;
 
