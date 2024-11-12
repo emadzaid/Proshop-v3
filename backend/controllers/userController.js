@@ -1,4 +1,4 @@
-const userModel = require('../models/userModel');
+const User = require('../models/userModel');
 const asyncHandler = require('../middleware/asyncHandler');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
@@ -11,7 +11,7 @@ const generateTokens = require('../utils/generateTokens');
 const authUser = asyncHandler(async (req,res) => {
 
     const {email, password} = req.body;
-    const user = await userModel.findOne({email});
+    const user = await User.findOne({email});
 
     if(user && (await user.matchPassword(password))) {
         generateTokens(res, user._id);
@@ -32,14 +32,14 @@ const authUser = asyncHandler(async (req,res) => {
 // @access Public
 const registerUser = asyncHandler(async (req,res) => {
     const {name, email, password} = req.body;
-    const userExist = await userModel.findOne({email});
+    const userExist = await User.findOne({email});
    
     if(userExist) {
         res.status(409);
         throw new Error('User already exists');
     } 
         
-    const user = await userModel.create({name, email, password});
+    const user = await User.create({name, email, password});
 
     if(user) {
         generateTokens(res, user._id);
@@ -76,7 +76,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 // @route GET/api/users/profile
 // @access Private
 const getUserProfile = asyncHandler(async (req,res) => {
-    const user = await userModel.findById(req.user._id);
+    const user = await User.findById(req.user._id);
     if(user) {
         res.status(200).json({
             _id: user._id,
@@ -94,7 +94,7 @@ const getUserProfile = asyncHandler(async (req,res) => {
 // @access Private
 const updateUserProfile = asyncHandler(async (req,res) => {
 
-    const user = await userModel.findById(req.user._id);
+    const user = await User.findById(req.user._id);
     
     if(user) {
         
@@ -117,36 +117,67 @@ const updateUserProfile = asyncHandler(async (req,res) => {
     
 });
 
-// @desc Det all users
+// @desc Get all users
 // @route GET/api/users/
-// @access Private
+// @access Private/Admin
 const getUsers = asyncHandler(async (req,res) => {
-    const users = await userModel.find({});
+    const users = await User.find({}).select('-password');
     res.send(users);
 });
 
+// @desc Get single user (by ID)
+// @route GET/api/users/:id
+// @access Private/Admin
+const getUserbyID = asyncHandler(async (req,res) => {
+    const user = await User.findById(req.params.id).select('-password');
+    if(user) {
+        res.status(200).json(user);
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+})
+
+
 // @desc Delete user
 // @route Delete/api/users/:id
-// @access Private
+// @access Private/Admin
 const deleteUser = asyncHandler(async (req,res) => {
-    res.send('delete user (admin)');
-});
+    const user = await User.findById(req.params.id);
+    if(user && user.isAdmin) {
+        res.status(400);
+        throw new Error("Cannot delete Admin User");
+    } else {
+        await User.deleteOne({_id: user._id});
+        res.status(200).json({message: 'User deleted successfully'});
+    }
 
+});
 
 // @desc Update user
 // @route PUT/api/users/:id
-// @access Private
+// @access Private/Admin
 const updateUser = asyncHandler(async (req,res) => {
-    res.send('update user (admin)');
+    const user = await User.findById(req.params.id);
+    if(user) {
+        user.name = req.body.name || user.name;
+        user.email = req.body.email || user.email;
+        user.isAdmin = Boolean(req.body.isAdmin);
+        const updatedUser = await user.save();
+
+        res.status(200).json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            isAdmin: updatedUser.isAdmin,
+        });
+    } else {
+        res.status(404);
+        throw new Error('Product not found with given ID');
+    }
+
 });
 
-
-// @desc Get single user (by ID)
-// @route GET/api/users/:id
-// @access Private
-const getUserbyID = asyncHandler(async (req,res) => {
-    res.send('get user by id (admin)');
-})
 
 module.exports = {
     authUser,

@@ -46,7 +46,7 @@ const ProductScreen = () => {
         <>
         <Link className='btn btn-light my-3' to='/'> Go Back </Link>
 
-        {isLoading ? (<Loader />) : error ? (<Message varient='danger'>error?.data?.message || error.error</Message>) : 
+        {isLoading ? (<Loader />) : error ? (<Message varient='danger'>{error?.data?.message || error.error}</Message>) : 
         
         (<>
 

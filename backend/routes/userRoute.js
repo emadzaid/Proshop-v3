@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const {protect, admin} = require('../middleware/authMiddleware');
 
-
 const {
     authUser,
     registerUser,
@@ -27,7 +26,7 @@ const {
     router.get('/', protect, admin ,getUsers); // admin only 
     router.post('/', registerUser);
 
-    router.put('/:id', protect, admin, updateUser);  // admin only 
+    router.put('/:id/', protect, admin, updateUser);  // admin only 
     router.delete('/:id', protect, admin, deleteUser);  // admin only 
     router.get('/:id', protect, admin, getUserbyID);  // admin only 
 

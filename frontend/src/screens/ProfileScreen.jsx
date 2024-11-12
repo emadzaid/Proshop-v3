@@ -10,14 +10,18 @@ import { useGetAllOrdersQuery } from "../slices/orderSlice";
 import { Link } from "react-router-dom";
 
 const ProfileScreen = () => {
-
     const dispatch = useDispatch();
     const {userInfo} = useSelector((state) => state.auth);
 
-    const [name, setName] = useState(userInfo.name || '');
-    const [email, setEmail] = useState(userInfo.email || '');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    useEffect(() => {
+        setName(userInfo.name);
+        setEmail(userInfo.email);
+      }, [userInfo.email, userInfo.name]);
 
     const [updateProfile, {isLoading: loadingUpdateProfile}] = useProfileMutation();
 
@@ -44,7 +48,8 @@ const ProfileScreen = () => {
     }
 
     const {data: orders, isLoading: loadingOrders, error: errorOrders} = useGetAllOrdersQuery();
-    console.log(orders)
+
+
 
   return (
     <Container>
@@ -126,6 +131,7 @@ const ProfileScreen = () => {
                             <Link to={`/orders/${order._id}`}> Details </Link>
                         </td>
                         </tr>
+                        
                     ))}
                     </tbody>
                 </Table>

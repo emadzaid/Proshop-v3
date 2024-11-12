@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { Col, Row, Container, ListGroup, Card, Image, ListGroupItem, Button } from "react-bootstrap";
-import { useGetOrderByIdQuery, useGetPayPalClientIDQuery, usePayOrderMutation } from "../slices/orderSlice";
+import { Col, Row, Container, ListGroup, Card, Image, Button } from "react-bootstrap";
+import { useGetOrderByIdQuery, useGetPayPalClientIDQuery, usePayOrderMutation, useUpdateOrderToDeliverMutation } from "../slices/orderSlice";
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -22,6 +22,19 @@ const OrderScreen = () => {
     const [payOrder, {isLoading: loadingPay}] = usePayOrderMutation();
 
     const {data:paypal, isLoading: loadingPayPal, error: errorPayPal} = useGetPayPalClientIDQuery();
+
+    const [updateDelivery, {isLoading: loadingDeliver, error: errorDeliver}] = useUpdateOrderToDeliverMutation();
+
+    const handleDeliver = async () => {
+      try {
+        await updateDelivery(orderID);
+        refetch();
+        toast.success('Marked as deliverd')
+      } catch (err) {
+        toast.error(err?.data?.message || err?.message)
+      }
+     
+    } 
 
 
     useEffect(() => {
@@ -95,8 +108,8 @@ const OrderScreen = () => {
                 <ListGroup variant='flush'>
                     <ListGroup.Item>
                         <h3>Shipping</h3>
-                        <p><strong>Name:</strong> {order.user.name} </p>
-                        <p><strong>Email:</strong> {order.user.email} </p>
+                        <p><strong>Name:</strong> {order.user?.name} </p>
+                        <p><strong>Email:</strong> {order.user?.email} </p>
                         <p><strong>Address:</strong> {order.shippingAddress.address}, {order.shippingAddress.city} {order.shippingAddress.postalCode}, {order.shippingAddress.country} </p>
                         {order.isDelivered ? (<Message varient='success'>Delivered</Message>) : (<Message varient='danger'>Not Delivered</Message>)}
                     </ListGroup.Item>
@@ -118,7 +131,7 @@ const OrderScreen = () => {
                               </Col>
     
                               <Col md={4}>
-                                <p><Link to={`/product/${item._id}`}> {item.name} </Link></p>
+                                <p><Link to={`/product/${item.product}`}> {item.name} </Link></p>
                               </Col>
     
                               <Col md={4}>
@@ -167,7 +180,7 @@ const OrderScreen = () => {
                 </Row>
               </ListGroup.Item>
 
-            {!order.isPaid && (
+            {!order.isPaid && !userInfo.isAdmin &&  (
                 <ListGroup.Item>
                   {loadingPay && <Loader />}
 
@@ -193,7 +206,13 @@ const OrderScreen = () => {
                     </div>
                   )}
                 </ListGroup.Item>
-              )}  
+              )}
+
+              {loadingDeliver && <Loader />}
+
+              {userInfo && userInfo.isAdmin && order.isPaid && (
+                <Button onClick={handleDeliver} disabled={order.isDelivered}> {order.isDelivered ? 'Delivered' : 'Mark as Deliver' } </Button>
+              )}
 
               </ListGroup>
 

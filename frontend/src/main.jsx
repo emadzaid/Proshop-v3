@@ -5,6 +5,7 @@ import './assets/styles/bootstrap.custom.css';
 
 import {createBrowserRouter,  createRoutesFromElements, RouterProvider, Route} from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import AdminRoute from './components/AdminRoute.jsx';
 
 import App from './App.jsx'
 import HomeScreen from './screens/HomeScreen.jsx';
@@ -17,6 +18,12 @@ import PaymentScreen from './screens/PaymentScreen.jsx';
 import PlaceOrderScreen from './screens/PlaceOrderScreen.jsx';
 import OrderScreen from './screens/OrderScreen.jsx';
 import ProfileScreen from './screens/ProfileScreen.jsx';
+
+import OrderListScreen from './screens/admin/OrderListScreen.jsx';
+import ProductListScreen from './screens/admin/ProductListScreen.jsx';
+import ProductEditScreen from './screens/admin/ProductEditScreen.jsx';
+import UserListScreen from './screens/admin/UserListScreen.jsx';
+import UserEditScreen from './screens/admin/userEditScreen.jsx';
 
 import store from '../src/store.js';
 import {Provider} from 'react-redux';
@@ -37,6 +44,14 @@ const router = createBrowserRouter(
         <Route path='/placeorder' element={<PlaceOrderScreen />} />
         <Route path='/orders/:id' element={<OrderScreen />} />
         <Route path='/profile' element={<ProfileScreen />} />
+      </Route>
+
+      <Route path='' element={<AdminRoute />}>
+        <Route path='/admin/orderlist' element={<OrderListScreen />} />
+        <Route path='/admin/productlist' element={<ProductListScreen />} />
+        <Route path='/admin/products/:id/edit' element={<ProductEditScreen />} />
+        <Route path='/admin/userlist' element={<UserListScreen />} />
+        <Route path='/admin/users/:id/edit' element={<UserEditScreen />} />
 
       </Route>
     </Route>
