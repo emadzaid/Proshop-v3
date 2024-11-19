@@ -23,9 +23,9 @@ const reviewSchema = new mongoose.Schema({
     comment: {
         type: String,
         required: true,
-    }
+    },
 
-});
+}, {timestamps: true});
 
 const productSchema = new mongoose.Schema({
 

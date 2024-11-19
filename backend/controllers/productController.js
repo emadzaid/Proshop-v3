@@ -1,14 +1,18 @@
 const asyncHandler = require('../middleware/asyncHandler');
 const Product = require('../models/productModel.js');
-const { merge } = require('../routes/productRoute.js');
 
 // @description retrieve all products
 // @route GET /api/products/
 // @acess PUBLIC 
 
 const getAllProducts = asyncHandler(async (req,res) => {
-    const products = await Product.find({});
-    res.json(products);
+
+    const keyword = req.query.keyword ? ({name: {$regex: req.query.keyword, $options: 'i' }}) : {};
+    const pageSize = 8;
+    const page = Number(req.query.pageNumber || 1);
+    const count = await Product.countDocuments({...keyword});
+    const products = await Product.find({...keyword}).limit(pageSize).skip(pageSize * (page - 1));
+    res.json({products, page, pages: Math.ceil(count / pageSize)});
 });
 
 // @description Get a specific product
@@ -90,4 +94,56 @@ const deleteProduct = asyncHandler(async(req,res) => {
 
 });
 
-module.exports = {getAllProducts, getSingleProduct, createProduct, editProduct, deleteProduct};
+// @description create product review
+// @route POST /api/products/:id/review
+// @acess PRIVATE/ 
+
+const createProductReview = asyncHandler(async(req,res) => {
+    const product = await Product.findById(req.params.id);
+    const {comment, rating} = req.body;
+    if(product) {
+        // check if user has already reviewed the product
+        const userReview = product.review.find((r) => r.user.toString() === req.user._id.toString())
+     
+        if(userReview) {
+            res.status(400);
+            throw new Error('Product already reviewed');
+        } else {
+
+            if(comment == '' || rating == '') {
+                res.status(400);
+                throw new Error('Please provide both a rating and a comment');
+            }
+
+            const newReview = {
+                name: req.user.name,
+                comment,
+                rating: Number(rating),
+                user: req.user._id,
+            }
+
+            product.review.push(newReview);
+            product.numReviews = product.review.length;
+            product.rating = product.review.reduce((acc, r) => acc + r.rating , 0) / product.review.length;
+
+            await product.save();
+            res.status(201).json({message: 'Review added'});
+        }
+    } else {
+        res.status(404);
+        throw new Error('Product not found');
+    }
+});
+
+// @description Get top products
+// @route GET /api/products/top
+// @acess PUBLIC
+
+const getTopProducts = asyncHandler(async(req,res) => {
+    const products = await Product.find({}).sort({rating: -1}).limit(3);
+    res.status(200).json(products);
+
+});
+
+
+module.exports = {getAllProducts, getSingleProduct, createProduct, editProduct, deleteProduct, createProductReview, getTopProducts};
